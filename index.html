@@ -1,43 +1,52 @@
-<html>
+<!--<html>-->
+<!--<script src='https://d3js.org/d3.v5.min.js'></script>-->
+<!--<style> rect {fill: lightblue; stroke: black; }</style>-->
+<!--<body>-->
+<!--<svg width=300 height=300>-->
+<!--</svg>-->
+<!--<script>-->
+
+<!--var data = d3.csv("Child_and_parent_income_ranking.csv");-->
+
+<!--xs = d3.scaleBand()-->
+	  <!--.domain([0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1])-->
+      <!--.range([0,200]);-->
+
+<!--ys = d3.scaleLinear()-->
+	  <!--.domain([0, 1])-->
+      <!--.range([200,0]);-->
+
+<!--d3.select("svg")-->
+      <!--.append("g")-->
+      <!--.attr("transform", "translate(50,50)")-->
+      <!--.selectAll("rect")-->
+      <!--.data(data)-->
+      <!--.enter().append("rect")-->
+      <!--.attr("x", function(d, i) {return xs(i / 10);})-->
+      <!--.attr("y", function(d) { return ys(d.one_to_10 / 10);})-->
+      <!--.attr("width", function(d, i) {return xs(1 / 10);})-->
+      <!--.attr("height", function(d) {return 200 - ys(d.one_to_10 / 10);});-->
+
+
+<!--d3.select("svg")-->
+  <!--.append("g")-->
+  <!--.attr("transform", "translate(50,50)")-->
+  <!--.call(d3.axisLeft(ys))-->
+
+<!--d3.select("svg")-->
+  <!--.append("g")-->
+  <!--.attr("transform", "translate(50,250)")-->
+  <!--.call(d3.axisBottom(xs))-->
+
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> rect {fill: lightblue; stroke: black; }</style>
-<body>
-<svg width=300 height=300>
-</svg>
 <script>
-
-var data = d3.csv("Child_and_parent_income_ranking.csv");
-
-xs = d3.scaleBand()
-	  .domain([0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1])
-      .range([0,200]);
-
-ys = d3.scaleLinear()
-	  .domain([0, 1])
-      .range([200,0]);
-
-
-d3.select("svg")
-  .append("g")
-  .attr("transform", "translate(50,50)")
-  .selectAll("rect")
-  .data(data)
-  .enter().append("rect")
-  .attr("x", function(d, i) {return xs(i);})
-  .attr("y", function(d) { return ys(d.one_to_10 / 10);})
-  .attr("width", function(d, i) {return xs(1);})
-  .attr("height", function(d) {return 200 - ys(d.one_to_10 / 10);});
-
-d3.select("svg")
-  .append("g")
-  .attr("transform", "translate(50,50)")
-  .call(d3.axisLeft(ys))
-
-d3.select("svg")
-  .append("g")
-  .attr("transform", "translate(50,250)")
-  .call(d3.axisBottom(xs))
-
+d3.csv("/data/Child_and_parent_income_ranking.csv", function(data) {
+    for (var i = 0; i < data.length; i++) {
+        console.log(data[i].one_to_10);
+        console.log(data[i].eleven_to_20);
+    }
+});
 </script>
-</body>
-</html>
