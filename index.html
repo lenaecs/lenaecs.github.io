@@ -1,52 +1,84 @@
-<!--<html>-->
-<!--<script src='https://d3js.org/d3.v5.min.js'></script>-->
-<!--<style> rect {fill: lightblue; stroke: black; }</style>-->
-<!--<body>-->
-<!--<svg width=300 height=300>-->
-<!--</svg>-->
-<!--<script>-->
+<html>
+<script src="https://d3js.org/d3.v4.js"></script>
+<style> rect {fill: lightgreen; stroke: black;} </style>
 
-<!--var data = d3.csv("Child_and_parent_income_ranking.csv");-->
+<svg width=600 height=300>
+</svg>
 
-<!--xs = d3.scaleBand()-->
-	  <!--.domain([0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1])-->
-      <!--.range([0,200]);-->
-
-<!--ys = d3.scaleLinear()-->
-	  <!--.domain([0, 1])-->
-      <!--.range([200,0]);-->
-
-<!--d3.select("svg")-->
-      <!--.append("g")-->
-      <!--.attr("transform", "translate(50,50)")-->
-      <!--.selectAll("rect")-->
-      <!--.data(data)-->
-      <!--.enter().append("rect")-->
-      <!--.attr("x", function(d, i) {return xs(i / 10);})-->
-      <!--.attr("y", function(d) { return ys(d.one_to_10 / 10);})-->
-      <!--.attr("width", function(d, i) {return xs(1 / 10);})-->
-      <!--.attr("height", function(d) {return 200 - ys(d.one_to_10 / 10);});-->
+  <div id="percentiles">
+   <select id="percentile_select">
+       <option value="one_to_10">Bottom 10th Percentile</option>
+       <option value="eleven_to_20">11th to 20th Percentile</option>
+       <option value="twentyOne_to_30">21st to 30th Percentile</option>
+       <option value="thirtyOne_to_40">31st to 40th Percentile</option>
+       <option value="fortyOne_to_50">41st to 50th Percentile</option>
+       <option value="fiftyOne_to_60">51st to 60th Percentile</option>
+       <option value="sixtyOne_to_70">61st to 70th Percentile</option>
+       <option value="seventyOne_to_80">71st to 80th Percentile</option>
+       <option value="eightyOne_to_90">81th to 90th Percentile</option>
+       <option value="ninetyOne_to_100">Top 10th Percentile</option>
+   </select>
+   <br>
+   <svg id="percentile"></svg>
+  </div>
 
 
-<!--d3.select("svg")-->
-  <!--.append("g")-->
-  <!--.attr("transform", "translate(50,50)")-->
-  <!--.call(d3.axisLeft(ys))-->
 
-<!--d3.select("svg")-->
-  <!--.append("g")-->
-  <!--.attr("transform", "translate(50,250)")-->
-  <!--.call(d3.axisBottom(xs))-->
 
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
-<script src='https://d3js.org/d3.v5.min.js'></script>
+
 <script>
-d3.csv("/data/Child_and_parent_income_ranking.csv", function(data) {
-    for (var i = 0; i < data.length; i++) {
-        console.log(data[i].one_to_10);
-        console.log(data[i].eleven_to_20);
-    }
-});
+
+function updateGraph(selection) {
+d3.selectAll("svg > *").remove();
+d3.csv("./data/Child_and_parent_income_ranking.csv", function(data){
+
+y = d3.scaleLinear()
+      .domain([0,.3])
+      .range([200,0]);
+
+x = d3.scaleLinear()
+      .domain([0, 1])
+      .range([0, 400]);
+
+d3.select("svg")
+  .append("g")
+  .attr("transform", "translate(50,50)")
+  .selectAll("rect")
+  .data(data)
+  .enter().append("rect")
+  .attr("x", function(d, i) {return x(i / 10);})
+  .attr("y", function(d) { return y(d[selection] / 10);})
+  .attr("width", function(d, i) {return x(1 / 10);})
+  .attr("height", function(d) {return 200 - y(d[selection] / 10);});
+
+
+d3.select("svg")
+  .append("g")
+  .attr("transform", "translate(50,50)")
+  .call(d3.axisLeft(y)
+          .tickValues([.05, .10, .15, .2, .25])
+          .tickFormat(d3.format(".0%")))
+
+
+d3.select("svg")
+  .append("g")
+  .attr("transform", "translate(50,250)")
+  .call(d3.axisBottom(x)
+          .tickValues([.1, .2, .3, .4, .5, .6, .7, .8, .9, 1])
+          .tickFormat(d3.format(".0%")))
+})
+
+}
+
+updateGraph("ninetyOne_to_100");
+
+    d3.select("#percentile_select").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+        // run the updateChart function with this selected option
+        updateGraph(selectedOption)
+    })
 </script>
+<body>
+</body>
+</html>
