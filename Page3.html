@@ -58,7 +58,7 @@ d3.select("svg")
       .attr("dy", "1em")
       .attr("font-size", "9px")
       .style("text-anchor", "middle")
-      .text(data[result] + "%");
+      .text(d3.format(".2s")(data[result]) + "%");
 
 
 d3.select("svg")
@@ -92,7 +92,7 @@ d3.select("svg")
       .attr("dy", "1em")
       .attr("font-size", "9px")
       .style("text-anchor", "middle")
-      .text(data[result2] + "%");
+      .text(d3.format(".2s")(data[result2]) + "%");
 
 
 d3.select("svg")
@@ -132,7 +132,7 @@ d3.select("svg")
       .attr("dy", "1em")
       .attr("font-size", "9px")
       .style("text-anchor", "middle")
-      .text(data[result] + "%");
+      .text(d3.format(".2s")(data[result]) + "%");
 
 
 d3.select("svg")
@@ -177,7 +177,7 @@ d3.select("svg")
       .attr("dy", "1em")
       .attr("font-size", "9px")
       .style("text-anchor", "middle")
-      .text(data[result2] + "%");
+      .text(d3.format(".2s")(data[result2]) + "%");
 })
 }
 
