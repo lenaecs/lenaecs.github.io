@@ -17,9 +17,22 @@ data_condensed = pysqldf("""SELECT case when par_pctile <= 10 then 'Parents Perc
                                         when par_pctile > 70 and par_pctile <= 80 then 'Parents Percentile 71-80'
                                         when par_pctile > 80 and par_pctile <= 90 then 'Parents Percentile 81-90'
                                         when par_pctile > 90 then 'Parents Percentile 91-100' end as par_pctile,
-                                    avg(kid_wage_rank_black_male) as kid_wage_rank_black_male,
-                                    avg(kid_wage_rank_white_male) as kid_wage_rank_white_male
+                                    avg(kid_wage_rank_white_male) as kid_wage_rank_white_male,
+                                    avg(kid_wage_rank_black_male) as kid_wage_rank_black_male
                             FROM data
                             group by 1;""")
 
 data_condensed.to_csv('data/percentile_race.csv', index=False)
+
+ten_percent = pysqldf("""SELECT *
+                            FROM data
+                            where par_pctile = 10;""")
+
+ten_percent.to_csv('data/ten_percentile.csv')
+
+
+ninety_percent = pysqldf("""SELECT *
+                            FROM data
+                            where par_pctile = 90;""")
+
+ninety_percent.to_csv('data/ninety_percent.csv')

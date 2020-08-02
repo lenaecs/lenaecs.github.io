@@ -1,12 +1,29 @@
 <html>
+<title>Socioeconomic Mobility</title>
+<body>
+Where a person ends up economically is largely determined by where they start out. People born to parents in the top 10%
+are more likely to end up in the top 10%, while those born in the bottom 10% have a harder time reaching the top
+economic tiers.
+<br>
+<br>
+The graph below displays a histogram showing the distribution of a child's economic outcome using percentile ranking.
+You can look at how that varies depending on their parent's economic outcome by selecting different outcomes in the
+drop down menu below.
+<br>
+<br>
+<a href="Page2.html">Next</a>
+
+</body>
+<div></div>
 <script src="https://d3js.org/d3.v4.js"></script>
-<style> rect {fill: lightgreen; stroke: black;} </style>
+<style> rect {fill: violet; stroke: black;} </style>
 
 <svg width=600 height=300>
 </svg>
 
   <div id="percentiles">
    <select id="percentile_select">
+       <option selected disabled>Parent's Income Percentile</option>
        <option value="one_to_10">Bottom 10th Percentile</option>
        <option value="eleven_to_20">11th to 20th Percentile</option>
        <option value="twentyOne_to_30">21st to 30th Percentile</option>
@@ -66,11 +83,28 @@ d3.select("svg")
   .call(d3.axisBottom(x)
           .tickValues([.1, .2, .3, .4, .5, .6, .7, .8, .9, 1])
           .tickFormat(d3.format(".0%")))
+
+d3.select("svg")
+  .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y",0)
+      .attr("x",-150)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Frequency");
+
+d3.select("svg")
+  .append("text")
+      .attr("y",270)
+      .attr("x",250)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Child's Income Percentile");
 })
 
 }
 
-updateGraph("ninetyOne_to_100");
+updateGraph("one_to_10");
 
     d3.select("#percentile_select").on("change", function(d) {
         // recover the option that has been chosen
@@ -78,6 +112,7 @@ updateGraph("ninetyOne_to_100");
         // run the updateChart function with this selected option
         updateGraph(selectedOption)
     })
+
 </script>
 <body>
 </body>

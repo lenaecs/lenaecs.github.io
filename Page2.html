@@ -1,96 +1,141 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
+<html>
+<title>Socioeconomic Mobility by Race</title>
+<body>
+Parent's income isn't the only thing that affects the economic outcomes of a child. Race is also a huge factor. A white
+male born to parents in the top 10% by income outearns 65% of his peers. On the other hand, a black male born to parents
+in the top 10% outearns 58% of his peers, a 7 point difference. This relationship holds across all parents income
+percentiles.
+<br>
+<br>
+<a href="Page3.html">Next</a>
+
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
+<div id="page2"></div>
 
 <script>
 
-// set the dimensions and margins of the graph
-var margin = {top: 30, right: 10, bottom: 10, left: 0},
-  width = 500 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
+var margin = {top: 10, right: 150, bottom: 100, left: 50},
+    width = 600 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-.append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-.append("g")
-  .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+var svg = d3.select("#page2")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
 
-// Parse the Data
-d3.csv("data/percentile_race.csv", function(data) {
+d3.csv("./data/percentile_race.csv", function(data) {
 
-  // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
-  dimensions2 = d3.keys(data[0]).filter(function(d) { return d != "kid_wage_rank_white_male" });
-  dimensions = d3.keys(data[0]).filter(function(d) { return d != "kid_wage_rank_black_male" })
+  var subgroups = data.columns.slice(1)
+  var par_pctiles = d3.map(data, function(d){return(d.par_pctile)}).keys()
 
-  // For each dimension, I build a linear scale. I store all in a y object
-  var y = {}
-  for (i in dimensions2) {
-    name = dimensions2[i]
-    y[name] = d3.scaleLinear()
-      .domain([0,100] )
-      .range([height, 0])
-  }
+  var x = d3.scaleBand()
+      .domain(par_pctiles)
+      .range([0, width])
+      .padding([0.1]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSize(0))
+    .selectAll("text")
+    .attr("transform", "rotate(45)")
+    .style("text-anchor", "start");
 
-  var y2 = {}
-  for (i in dimensions2) {
-    name = dimensions2[i]
-    y2[name] = d3.scaleLinear()
-      .domain([0,100] )
-      .range([height, 0])
-  }
+  var y = d3.scaleLinear()
+    .domain([0, .7])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y).tickFormat(d3.format(".0%")));
 
-  // Build the X scale -> it find the best position for each Y axis
-  x = d3.scalePoint()
-    .range([0, width])
-    .padding(1)
-    .domain(dimensions);
+  var xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.1])
 
-  // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
-  function path2(d) {
-      return d3.line()(dimensions2.map(function(p) { return [x(p), y[p](d[p])]; }));
-  }
+  var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['lightgreen','lightblue'])
 
-  function path(d) {
-      return d3.line()(dimensions2.map(function(p) { return [x(p), y2[p](d[p])]; }));
-  }
+  d3.select('body')
+    .append('div')
+    .attr('id', 'tooltip')
+    .attr('style', 'position: absolute; opacity: 1;');
 
-  // Draw the lines
-  svg
-    .selectAll("myPath")
+
+  svg.append("g")
+    .selectAll("g")
     .data(data)
-    .enter().append("path")
-    .attr("d", path2)
-    .style("fill", "none")
-    .style("stroke", "blue")
-    .style("opacity", 0.5)
-
-
-
-  // Draw the axis:
-  svg.selectAll("myAxis")
-    // For each dimension of the dataset I add a 'g' element:
-    .data(dimensions).enter()
+    .enter()
     .append("g")
-    // I translate this element to its right position on the x axis
-    .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-    // And I build the axis with the call function
-    .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
-    // Add axis title
-    .append("text")
+      .attr("transform", function(d) { return "translate(" + x(d.par_pctile) + ",0)"; })
+    .selectAll("rect")
+    .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+    .enter().append("rect")
+      .attr("x", function(d) { return xSubgroup(d.key); })
+      .attr("y", function(d) { return y(d.value / 100); })
+      .attr("width", xSubgroup.bandwidth())
+      .attr("height", function(d) { return height - y(d.value / 100); })
+      .attr("fill", function(d) { return color(d.key); })
+      .attr("stroke", "black")
+       .on('mouseover', function(d) {
+         d3.select('#tooltip').transition().duration(200).style('opacity', 1).text("Average Percentile Rank " + d3.format(".2s")(d.value) + "%")
+         })
+         .on('mouseout', function() {
+         d3.select('#tooltip').style("hidden", true).html('');
+         })
+         .on('mousemove', function() {
+         d3.select('#tooltip').style('left', (d3.event.pageX+10) + 'px').style('top', (d3.event.pageY+10) + 'px')
+         });
+
+  svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .attr("y", -9)
-      .text(function(d) { return d; })
-      .style("fill", "black")
+      .text("Average Income Percentage for Child");
+
+d3.select('body')
+.append('div')
+.attr('id', 'tooltip')
+.attr('style', 'position: absolute; opacity: 0;');
+
+svg.append("circle")
+   .attr("cx",420)
+   .attr("cy",30)
+   .attr("r", 6)
+   .style("fill", "lightgreen")
+   .attr("stroke", "black");
+
+svg.append("circle")
+   .attr("cx",420)
+   .attr("cy",60)
+   .attr("r", 6)
+   .style("fill", "lightblue")
+   .attr("stroke", "black");
+
+
+svg.append("text")
+   .attr("x", 440)
+   .attr("y", 30)
+   .text("White Males")
+   .style("font-size", "15px")
+   .attr("alignment-baseline","middle")
+
+svg.append("text")
+   .attr("x", 440)
+   .attr("y", 60)
+   .text("Black Males")
+   .style("font-size", "15px")
+   .attr("alignment-baseline","middle")
 
 })
-
 
 </script>

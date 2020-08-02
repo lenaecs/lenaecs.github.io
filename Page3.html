@@ -1,0 +1,197 @@
+<html>
+
+<body>
+A person's parent's socioeconomic class also affects educational outcome. Below you can see the percentage of people
+from the 10th percentile and the 90th percentile went to college. You can select race and gender in the drop down menus
+below. As you can see, those whose parents are in the top 10 percentile are much more likely to graduate high school and
+go on to college, across gender and race, though gender and race have an effect on this relationship.
+<br>
+<br>
+<a href="index.html">Back to Beginning</a>
+</body>
+<div></div>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> path {stroke: black;}</style>
+<svg width=400 height=276>
+</svg>
+<br>
+   <select id="race_select">
+       <option value="black">Black</option>
+       <option value="white">White</option>
+   </select>
+   <svg id="race"></svg>
+      <select id="gender_select">
+       <option value="male">Male</option>
+       <option value="female">Female</option>
+   </select>
+   <svg id="gender"></svg>
+
+
+<script>
+
+function updateGraph(race, gender) {
+d3.selectAll("svg > *").remove();
+d3.csv("./data/ten_percentile.csv", function(data){
+
+var color = ['violet','white'];
+var pie = d3.pie();
+var arc = d3.arc().innerRadius(0).outerRadius(50);
+
+result = 'kid_no_hs_' + race + '_' + gender
+
+d3.select("svg")
+  .append("text")
+      .attr("y",5)
+      .attr("x",75)
+      .attr("dy", "1em")
+      .attr("font-size", "10px")
+      .style("text-anchor", "middle")
+      .text("Bottom 10% No High School");
+
+d3.select("svg")
+  .append("text")
+      .attr("y",25)
+      .attr("x",25)
+      .attr("dy", "1em")
+      .attr("font-size", "9px")
+      .style("text-anchor", "middle")
+      .text(data[result] + "%");
+
+
+d3.select("svg")
+  .append("g")
+   .selectAll('path')
+   .data(pie([data[result], 100 - data[result]]))
+   .enter()
+   .append('path')
+   .attr('d', arc)
+   .attr('fill', function(d, i) {return color[i];})
+   .attr('cx', 25)
+   .attr('cy', 25)
+   .attr('transform', 'translate(75, 75)');
+
+
+result2 = 'kid_college_' + race + '_' + gender
+
+d3.select("svg")
+  .append("text")
+      .attr("y",5)
+      .attr("x",225)
+      .attr("dy", "1em")
+      .attr("font-size", "10px")
+      .style("text-anchor", "middle")
+      .text("Bottom 10% College");
+
+d3.select("svg")
+  .append("text")
+      .attr("y",15)
+      .attr("x",225)
+      .attr("dy", "1em")
+      .attr("font-size", "9px")
+      .style("text-anchor", "middle")
+      .text(data[result2] + "%");
+
+
+d3.select("svg")
+  .append("g")
+   .selectAll('path')
+   .data(pie([data[result2], 100 - data[result2]]))
+   .enter()
+   .append('path')
+   .attr('d', arc)
+   .attr('fill', function(d, i) {return color[i];})
+   .attr('cx', 25)
+   .attr('cy', 25)
+   .attr('transform', 'translate(225, 75)');
+})
+
+d3.csv("./data/ninety_percent.csv", function(data){
+
+var color = ['violet','white'];
+var pie = d3.pie();
+var arc = d3.arc().innerRadius(0).outerRadius(50);
+
+result = 'kid_no_hs_' + race + '_' + gender
+
+d3.select("svg")
+  .append("text")
+      .attr("y",150)
+      .attr("x",75)
+      .attr("dy", "1em")
+      .attr("font-size", "10px")
+      .style("text-anchor", "middle")
+      .text("Top 10% No High School");
+
+d3.select("svg")
+  .append("text")
+      .attr("y",175)
+      .attr("x",25)
+      .attr("dy", "1em")
+      .attr("font-size", "9px")
+      .style("text-anchor", "middle")
+      .text(data[result] + "%");
+
+
+d3.select("svg")
+  .append("g")
+   .selectAll('path')
+   .data(pie([data[result], 100 - data[result]]))
+   .enter()
+   .append('path')
+   .attr('d', arc)
+   .attr('fill', function(d, i) {return color[i];})
+   .attr('cx', 25)
+   .attr('cy', 25)
+   .attr('transform', 'translate(75, 225)');
+
+result2 = 'kid_college_' + race + '_' + gender
+
+d3.select("svg")
+  .append("text")
+      .attr("y",150)
+      .attr("x",225)
+      .attr("dy", "1em")
+      .attr("font-size", "10px")
+      .style("text-anchor", "middle")
+      .text("Top 10% College");
+
+d3.select("svg")
+  .append("g")
+   .selectAll('path')
+   .data(pie([data[result2], 100 - data[result2]]))
+   .enter()
+   .append('path')
+   .attr('d', arc)
+   .attr('fill', function(d, i) {return color[i];})
+   .attr('cx', 25)
+   .attr('cy', 25)
+   .attr('transform', 'translate(225, 225)');
+
+d3.select("svg")
+  .append("text")
+      .attr("y",250)
+      .attr("x",250)
+      .attr("dy", "1em")
+      .attr("font-size", "9px")
+      .style("text-anchor", "middle")
+      .text(data[result2] + "%");
+})
+}
+
+race = "black"
+gender = "male"
+updateGraph(race, gender);
+
+    d3.select("#race_select").on("change", function(d) {
+        race = d3.select(this).property("value")
+        updateGraph(race, gender)
+    })
+
+    d3.select("#gender_select").on("change", function(d) {
+        gender =  d3.select(this).property("value")
+        updateGraph(race, gender)
+    })
+
+
+</script>
+</html>
